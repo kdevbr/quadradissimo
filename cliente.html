@@ -309,13 +309,12 @@ function DesenharAlcanceAtaque(agora){
 
   const centroX = players.prota.x + (players.prota.tamanho / 2);
   const centroY = players.prota.y + (players.prota.tamanho / 2);
-  const lado = alcance * 2;
 
   d.save();
   d.beginPath();
   d.strokeStyle = `rgba(0, 0, 255, ${opacidade})`;
   d.lineWidth = 3;
-  d.rect(centroX - alcance, centroY - alcance, lado, lado);
+  d.arc(centroX, centroY, alcance, 0, Math.PI * 2);
   d.stroke();
   d.restore();
 }
@@ -329,7 +328,6 @@ function DesenharAnimacaoAtaque(agora){
   const progresso = tempoDesdeAtaque / duracaoAnimacaoAtaque;
   const alcanceBase = 80;
   const alcanceAnimado = alcanceBase + (12 * progresso);
-  const lado = alcanceAnimado * 2;
   const alpha = Math.max(0, 0.6 - (0.6 * progresso));
 
   const centroX = players.prota.x + (players.prota.tamanho / 2);
@@ -339,7 +337,7 @@ function DesenharAnimacaoAtaque(agora){
   d.beginPath();
   d.strokeStyle = `rgba(255, 165, 0, ${alpha})`;
   d.lineWidth = 4;
-  d.rect(centroX - alcanceAnimado, centroY - alcanceAnimado, lado, lado);
+  d.arc(centroX, centroY, alcanceAnimado, 0, Math.PI * 2);
   d.stroke();
   d.restore();
 }

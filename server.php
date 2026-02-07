@@ -77,14 +77,16 @@ class Chat implements MessageComponentInterface
             if ($id === $attackerId) continue;
 
             $targetSize = $target['attributos']['tamanho'];
-            $targetX = $target['attributos']['x'] + ($targetSize / 2);
-            $targetY = $target['attributos']['y'] + ($targetSize / 2);
+            $targetX = $target['attributos']['x'];
+            $targetY = $target['attributos']['y'];
 
-            $dx = abs($targetX - $attackerX);
-            $dy = abs($targetY - $attackerY);
-            $hitRange = $range + ($targetSize / 2);
+            $closestX = max($targetX, min($attackerX, $targetX + $targetSize));
+            $closestY = max($targetY, min($attackerY, $targetY + $targetSize));
+            $dx = $attackerX - $closestX;
+            $dy = $attackerY - $closestY;
+            $distance = sqrt(($dx * $dx) + ($dy * $dy));
 
-            if ($dx <= $hitRange && $dy <= $hitRange) {
+            if ($distance <= $range) {
                 $target['attributos']['hp'] = max(0, $target['attributos']['hp'] - $damage);
             }
         }
