@@ -25,6 +25,8 @@ ws.addEventListener("open", e => {
 
 //ws.send(m); enviar
 let meuId = null
+let ultimoAtaque = 0;
+const tempoRecargaAtaque = 400;
 
 ws.onmessage = e => {
 
@@ -76,10 +78,16 @@ const d = canva.getContext("2d")
 let key = {}
 window.addEventListener("keydown", e =>{
   key[e.key.toLowerCase()] = true;
+  if (e.code === "Space") {
+    SolicitarAtaque();
+  }
 })
 window.addEventListener("keyup", e =>{
   key[e.key.toLowerCase()] = false;
 })
+window.addEventListener("pointerdown", () => {
+  SolicitarAtaque();
+});
 
 //playerProtagonista
 const nome = prompt("Digite seu nome:", "Jogador");
@@ -272,6 +280,18 @@ function EnviarEstado(){
     type: "state",
     key: key
   }))
+}
+
+function SolicitarAtaque(){
+  if (!aberto || !players.prota.id) return;
+
+  const agora = Date.now();
+  if (agora - ultimoAtaque < tempoRecargaAtaque) return;
+  ultimoAtaque = agora;
+
+  ws.send(JSON.stringify({
+    type: "attack"
+  }));
 }
 
 function DesenharNome(x, y, nome){
