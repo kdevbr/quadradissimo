@@ -40,14 +40,14 @@ ws.onmessage = e => {
     const inimigosTemp = [];
 for (const p of data.players) {
       if (p.id === players.prota.id) {
-        // 🔥 aqui sim você atualiza o prota
+        // atualizar o prota
         players.prota.x = p.attributos.x;
         players.prota.y = p.attributos.y;
         players.prota.hp = p.attributos.hp;
         players.prota.maxHp = p.attributos.maxHp;
         players.prota.tamanho = p.attributos.tamanho;
       } else {
-        // 🔥 aqui você guarda inimigos
+        // guardar inimigos
         inimigosTemp.push(p);
       }
     }
@@ -72,7 +72,7 @@ function resizeCanvasToDisplaySize(canva) {
 const canva = document.getElementsByTagName('canvas')[0]
 resizeCanvasToDisplaySize(canva);
 const d = canva.getContext("2d")
-//teclas 😎
+//teclas
 let key = {}
 window.addEventListener("keydown", e =>{
   key[e.key.toLowerCase()] = true;
@@ -97,15 +97,12 @@ players = {
 }
 
 function gameLoop(){
-  // 1. Limpeza
   d.setTransform(1, 0, 0, 1, 0, 0);
   d.clearRect(0, 0, canva.width, canva.height);
 
-  // Fundo fixo (opcional)
   d.fillStyle = "lightgrey";
   d.fillRect(0, 0, canva.width, canva.height);
 
-  // --- CAMADA DO MUNDO (Move com a câmera) ---
   let camX = 0;
   let camY = 0;
 
@@ -140,8 +137,6 @@ function DesenharGrid() {
     // Define o tamanho da célula da grade
     const gridSize = 100; 
 
-    // Precisamos saber onde a câmera "começa" e "termina" para desenhar o grid só onde a gente vê
-    // Mas para simplificar, vamos desenhar baseado na posição do player
     if(players.prota.x === null) return;
 
     // Pega o arredondamento da posição do player para alinhar a grade
