@@ -27,6 +27,8 @@ ws.addEventListener("open", e => {
 let meuId = null
 let ultimoAtaque = 0;
 const tempoRecargaAtaque = 400;
+let ataqueEmAndamento = 0;
+const duracaoAnimacaoAtaque = 180;
 
 ws.onmessage = e => {
 
@@ -105,6 +107,7 @@ players = {
 }
 
 function gameLoop(){
+  const agora = performance.now();
   d.setTransform(1, 0, 0, 1, 0, 0);
   d.clearRect(0, 0, canva.width, canva.height);
 
@@ -125,8 +128,10 @@ function gameLoop(){
 
   // Desenha coisas do mundo
   DesenharGrid();
+  DesenharAlcanceAtaque(agora);
   DesenharInimigos(); // Desenha os quadrados normais quando visíveis
   DesenharProta();
+  DesenharAnimacaoAtaque(agora);
 
   // --- CAMADA DE UI (Fixa na tela) ---
   
@@ -288,10 +293,53 @@ function SolicitarAtaque(){
   const agora = Date.now();
   if (agora - ultimoAtaque < tempoRecargaAtaque) return;
   ultimoAtaque = agora;
+  ataqueEmAndamento = performance.now();
 
   ws.send(JSON.stringify({
     type: "attack"
   }));
+}
+
+function DesenharAlcanceAtaque(agora){
+  if (!players.prota.id || players.prota.x === null) return;
+
+  const tempoDesdeAtaque = agora - ataqueEmAndamento;
+  const opacidade = tempoDesdeAtaque < duracaoAnimacaoAtaque ? 0.25 : 0.1;
+  const raio = 80;
+
+  const centroX = players.prota.x + (players.prota.tamanho / 2);
+  const centroY = players.prota.y + (players.prota.tamanho / 2);
+
+  d.save();
+  d.beginPath();
+  d.strokeStyle = `rgba(0, 0, 255, ${opacidade})`;
+  d.lineWidth = 3;
+  d.arc(centroX, centroY, raio, 0, Math.PI * 2);
+  d.stroke();
+  d.restore();
+}
+
+function DesenharAnimacaoAtaque(agora){
+  if (!players.prota.id || players.prota.x === null) return;
+
+  const tempoDesdeAtaque = agora - ataqueEmAndamento;
+  if (tempoDesdeAtaque > duracaoAnimacaoAtaque) return;
+
+  const progresso = tempoDesdeAtaque / duracaoAnimacaoAtaque;
+  const raioBase = 80;
+  const raio = raioBase + (12 * progresso);
+  const alpha = Math.max(0, 0.6 - (0.6 * progresso));
+
+  const centroX = players.prota.x + (players.prota.tamanho / 2);
+  const centroY = players.prota.y + (players.prota.tamanho / 2);
+
+  d.save();
+  d.beginPath();
+  d.strokeStyle = `rgba(255, 165, 0, ${alpha})`;
+  d.lineWidth = 4;
+  d.arc(centroX, centroY, raio, 0, Math.PI * 2);
+  d.stroke();
+  d.restore();
 }
 
 function DesenharNome(x, y, nome){
