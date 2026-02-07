@@ -26,8 +26,7 @@ class Chat implements MessageComponentInterface
                 'nome' => null,
                 'hp' => 500,
                 'maxHp' => 500,
-                'tamanho' => 50,
-                'lastAttack' => 0
+                'tamanho' => 50
             ],
             "id" => $conn->resourceId,
             "teclasPrecionadas" => null
@@ -47,46 +46,6 @@ class Chat implements MessageComponentInterface
         if ($data['type'] === 'state') {
 
             $this->players[$conn->resourceId]["teclasPrecionadas"] = $data['key'];
-        }
-
-        if ($data['type'] === 'attack') {
-            $this->processAttack($conn->resourceId);
-        }
-    }
-
-    private function processAttack(int $attackerId): void
-    {
-        if (!isset($this->players[$attackerId])) return;
-
-        $attacker = &$this->players[$attackerId];
-        $now = microtime(true);
-        $lastAttack = $attacker['attributos']['lastAttack'] ?? 0;
-        $cooldown = 0.4;
-
-        if (($now - $lastAttack) < $cooldown) return;
-
-        $attacker['attributos']['lastAttack'] = $now;
-
-        $range = 80;
-        $damage = 50;
-        $attackerSize = $attacker['attributos']['tamanho'];
-        $attackerX = $attacker['attributos']['x'] + ($attackerSize / 2);
-        $attackerY = $attacker['attributos']['y'] + ($attackerSize / 2);
-
-        foreach ($this->players as $id => &$target) {
-            if ($id === $attackerId) continue;
-
-            $targetSize = $target['attributos']['tamanho'];
-            $targetX = $target['attributos']['x'] + ($targetSize / 2);
-            $targetY = $target['attributos']['y'] + ($targetSize / 2);
-
-            $dx = $targetX - $attackerX;
-            $dy = $targetY - $attackerY;
-            $distance = sqrt(($dx * $dx) + ($dy * $dy));
-
-            if ($distance <= $range) {
-                $target['attributos']['hp'] = max(0, $target['attributos']['hp'] - $damage);
-            }
         }
     }
 
